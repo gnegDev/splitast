@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: splitast
+
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/splitast_dev}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:root}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+minio:
+  url: ${S3_URL:http://localhost:9000}
+  bucket: ${S3_BUCKET:scanity-s3-dev}
+  region: ${S3_REGION:ru-central1}
+
+  access-key: ${S3_ACCESS_KEY:minioadmin}
+  secret-key: ${S3_SECRET_KEY:minioadmin}

@@ -1,0 +1,33 @@
+{
+  "runs": [
+    {
+      "tool": { "driver": { "name": "ExampleSAST" } },
+      "results": [
+        {
+          "level": "error",
+          "message": { "text": "SQL Injection possible" },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": { "uri": "src/app/user.py" },
+                "region": { "startLine": 42 }
+              }
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "message": { "text": "Hardcoded password" },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": { "uri": "src/config/settings.py" },
+                "region": { "startLine": 10 }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
