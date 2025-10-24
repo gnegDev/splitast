@@ -9,6 +9,7 @@ import com.gnegdev.splitast.service.manager.repository.ReportRepository;
 import com.gnegdev.splitast.service.parser.ReportParserService;
 import com.gnegdev.splitast.service.s3.S3ClientService;
 import com.gnegdev.splitast.util.mapper.TaskMapper;
+import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -24,9 +25,9 @@ public class ReportManager {
     private final S3ClientService s3ClientService;
     private final TaskMapper taskMapper;
 
-    public Report getReportById(UUID uuid) {
+    public Report getReportById(UUID uuid) throws NoResultException {
         return reportRepository.findById(uuid)
-                .orElseThrow(() -> new RuntimeException("Report not found with id: " + uuid));
+                .orElseThrow(() -> new NoResultException("Report not found with id: " + uuid));
     }
 
     public Report createReport(CreateReportRequest createReportRequest) throws IOException {
@@ -45,10 +46,6 @@ public class ReportManager {
         String filename = s3ClientService.uploadFile(createReportRequest.file());
         report.setFilename(filename);
 
-        try {
-            return reportRepository.save(report);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        return reportRepository.save(report);
     }
 }

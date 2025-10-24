@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class DistributionController {
     private final DistributionService distributionService;
 
-    @PostMapping("/a")
+    @PostMapping
     public ResponseEntity<?> distributeTasksAmongUsersFromReport(@Valid @RequestBody DistributeTasksRequest distributeTasksRequest) {
         try {
             distributionService.distributeTasksAmongUsersFromReport(distributeTasksRequest);

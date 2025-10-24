@@ -5,7 +5,9 @@ import com.gnegdev.splitast.entity.Role;
 import com.gnegdev.splitast.entity.User;
 import com.gnegdev.splitast.service.manager.repository.UserRepository;
 import com.gnegdev.splitast.util.mapper.UserMapper;
+import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,15 +18,16 @@ import java.util.UUID;
 public class UserManager {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public User getUserById(UUID uuid) {
+    public User getUserById(UUID uuid) throws NoResultException {
         return userRepository.findById(uuid)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + uuid));
+                .orElseThrow(() -> new NoResultException("User not found with id: " + uuid));
     }
 
-    public User getUserByUsername(String username) {
+    public User getUserByUsername(String username) throws NoResultException {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+                .orElseThrow(() -> new NoResultException("User not found with username: " + username));
     }
 
     public List<User> getAllUsers() {
@@ -33,12 +36,10 @@ public class UserManager {
 
     public User createUser(CreateUserRequest createUserRequest) {
         User user = userMapper.toEntity(createUserRequest);
+
+        user.setPassword(passwordEncoder.encode(createUserRequest.password()));
         user.setRole(Role.ROLE_USER);
 
-        try {
-            return userRepository.save(user);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        return userRepository.save(user);
     }
 }

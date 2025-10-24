@@ -9,9 +9,6 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-
-//    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "tasks", ignore = true)

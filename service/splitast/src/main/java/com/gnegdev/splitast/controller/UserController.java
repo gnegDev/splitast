@@ -3,6 +3,7 @@ package com.gnegdev.splitast.controller;
 import com.gnegdev.splitast.dto.CreateUserRequest;
 import com.gnegdev.splitast.entity.User;
 import com.gnegdev.splitast.service.manager.UserManager;
+import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,8 +25,10 @@ public class UserController {
         try {
             User user = userManager.getUserById(id);
             return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (RuntimeException e) {
+        } catch (NoResultException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
