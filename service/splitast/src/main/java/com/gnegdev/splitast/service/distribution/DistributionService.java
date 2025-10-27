@@ -15,56 +15,26 @@ import java.util.*;
 @RequiredArgsConstructor
 public class DistributionService {
     private final ReportManager reportManager;
-    private final UserManager userManager;
     private final UserRepository userRepository;
 
     public void distributeTasksAmongUsersFromReport(DistributeTasksRequest distributeTasksRequest) {
         List<Task> tasks = reportManager.getReportById(distributeTasksRequest.reportId()).getTasks();
+        List<UUID> userIds = distributeTasksRequest.userIds();
+
         List<User> users = new ArrayList<>();
 
-        List<UUID> userIds = distributeTasksRequest.userIds();
         for (UUID id : userIds) {
-            User user = userManager.getUserById(id);
-            users.add(user);
+            Optional<User> user = userRepository.findById(id);
+            user.ifPresent(users::add);
         }
 
-
-        // Create a list of users with their current task counts
-        List<UserTaskCount> userLoads = new ArrayList<>();
-        for (User user : users) {
-            userLoads.add(new UserTaskCount(user, user.getTasks().size()));
-        }
-
-        // Sort users by current task count (users with fewer tasks first)
-        userLoads.sort(Comparator.comparingInt(utc -> utc.currentTaskCount));
-
-        // Distribute new tasks to balance the overall load
         for (Task task : tasks) {
-            // Always pick the user with the fewest total tasks
-            UserTaskCount leastLoaded = userLoads.get(0);
+            User leastLoadedUser = Collections.min(users, Comparator.comparingInt((User user) -> user.getTasks().size()));
 
-            leastLoaded.user.getTasks().add(task);
-            task.setUser(leastLoaded.user);
+            leastLoadedUser.getTasks().add(task);
+            task.setUser(leastLoadedUser);
 
-            userRepository.save(leastLoaded.user);
-
-            leastLoaded.currentTaskCount++;
-
-            // Re-sort to maintain order (more efficient than full sort each time)
-            userLoads.sort(Comparator.comparingInt(utc -> utc.currentTaskCount));
-        }
-    }
-
-    /**
-     * Helper class to track user task counts during distribution
-     */
-    private static class UserTaskCount {
-        User user;
-        int currentTaskCount;
-
-        UserTaskCount(User user, int currentTaskCount) {
-            this.user = user;
-            this.currentTaskCount = currentTaskCount;
+            userRepository.save(leastLoadedUser);
         }
     }
 }

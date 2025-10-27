@@ -1,0 +1,38 @@
+{% extends 'layout/base_template.html' %}
+
+{% block styles %}
+    <title>Дэшборд</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_styles.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="page-title">Назначенные задачи</h1>
+        <div class="panels-grid">
+            {% if tasks|length > 0 %}
+                {% for task in tasks %}
+                    <div class="panel">
+                        <div class="panel-content">
+                            <h3 class="panel-title">{{ task['message'] }}</h3>
+                            <p class="panel-description">{{ task['status'] }}<br>{{ task['severity'] }}</p>
+                            <a href="dashboard/{{ task['id'] }}" class="panel-button">Подробнее</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="panel">
+<!--                    <img src="{{ url_for('static', filename='images/plus.png') }}"-->
+<!--                         alt="Новый снимок"-->
+<!--                         class="panel-image"-->
+<!--                         style="background-color: #7B1113;">-->
+
+                    <div class="panel-content">
+                        <h3 class="panel-title">Пока нет задач</h3>
+                        <p class="panel-description">Загрузите SAST-отчёт для распределения</p>
+                        <a href="/upload" class="panel-button">Зарузить отчёт</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

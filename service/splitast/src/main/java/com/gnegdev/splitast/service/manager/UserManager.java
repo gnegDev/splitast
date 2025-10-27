@@ -30,6 +30,11 @@ public class UserManager {
                 .orElseThrow(() -> new NoResultException("User not found with username: " + username));
     }
 
+    public User getUserByEmail(String email) throws NoResultException {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NoResultException("User not found with email: " + email));
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
